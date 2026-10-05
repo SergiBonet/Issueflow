@@ -16,12 +16,12 @@ final class HomeController{
     Tendra un nombre interno: 'app_home' -> 2do argumento
     solo para metodos GET ->3er argumento 
     Luego de la ruta definimos el method correspondiente a ella,
-    el cual genera la respuesta para el cliente, que sera un objeto de la clase Response.
+    el cual genera la respuesta para el cliente, que sera un objeto de la clase Response.*/
 
-    */
     #[Route('/',name:'app_home',methods: ['GET'])]
     public function index():Response {
         $projectName = 'IssueFlow';
+        $message = 'Symfony ha recibido la peticion y ha devuelto un Response';
         //Creamos una variable que contiene el archivo HTML.
         $html = <<<HTML
             <!DOCTYPE html>
@@ -32,7 +32,13 @@ final class HomeController{
                 <title>{$projectName}</title>
             </head>
             <body>
-                <h1>{$projectName}</h1>
+                <main>
+                    <h1>{$projectName}</h1>
+                    <p>{$message}</p>
+                    <p><a href="/tickets">Ver Incidencias</a></p>
+                    <p><a href="/health">Comprobar estado</a></p>
+                </main>
+                
             </body>
             </html>
 
@@ -40,7 +46,13 @@ final class HomeController{
 
         //Retornamos la respuesta
         return new Response($html, Response::HTTP_OK);
-
     }
+    
+    #[Route('/health',name:'app_health',methods: ['GET'])]
+    public function health():Response{
+        //Especifico que el contenido es text/plain i no un documento html.
+        return new Response('IssueFlow OK', Response::HTTP_OK, ['Content-Type' => 'text/plain']);
+    }
+
     
 }
