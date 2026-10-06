@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types =1);
+
 namespace App\Controller;
 //Clase de symfony para construir las respuestas para el cliente
 use Symfony\Component\HttpFoundation\Response;
