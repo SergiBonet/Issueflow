@@ -29,7 +29,7 @@ final class TicketController
         $items = '';
 
         foreach (self::TICKETS as $ticket) {
-            $items .= "<li><a href='/tickets/{$ticket['id']}'>{$ticket['id']}</a>: {$ticket['title']}({$ticket['priority']})</li>";
+            $items .= "<li>{$ticket['id']}</a>: {$ticket['title']}({$ticket['priority']})</li>";
         }
         $total = count(self::TICKETS);
         $title = 'Tickets';
@@ -87,8 +87,6 @@ final class TicketController
                     <h1>Ticket {$id}</h1>
                     <p>Title: {$ticket['title']}</p>
                     <p>Priority: {$ticket['priority']}</p>
-                    <p><a href="/">Pagina principal</a></p>
-                    <p><a href="/tickets">Pagina Tickets</a></p>
                 </main>
                 
             </body>
