@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use PHPUnit\Framework\Attributes\Ticket;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-final class TicketController
+//Mi clase TicketController hereda de AbstractController de Symfony.
+final class TicketController extends AbstractController
 {
     /*En este caso los tickets se definen de forma estatica.
     En un caso real se obtendria de una base de datos*/
@@ -73,7 +74,28 @@ final class TicketController
             }
 
         }
+        //En este punto del codigo, si $ticket sigue siendo null, significa que no se encontro ningun ticket con el id proporcionado.
+        //Si es null voy a lanzar un error 404.
+        if ($ticket===null){
+            //throw $this->createNotFoundException('La incidencia no existe');
+            $html = <<<HTML
+                <!DOCTYPE html>
+                <html lang="es">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Ticket no existe</title>
+                </head>
+                <body>
+                    <h1>El ticket solicitado no existe</h1>
+                    <h2>***********Error 404***********</h2>
+                    <a href="/tickets">Volver a tickets</a>
+                </body>
+                </html>
 
+            HTML;
+            return new Response($html, Response::HTTP_NOT_FOUND);
+        }
         $html = <<<HTML
             <!DOCTYPE html>
             <html lang="es">
