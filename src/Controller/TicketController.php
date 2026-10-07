@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
 //Mi clase TicketController hereda de AbstractController de Symfony.
@@ -61,10 +62,12 @@ final class TicketController extends AbstractController
     //Ruta dinamica para mostrar un ticket especifico por su ID.
     #[Route('/tickets/{id}', name:"app_ticket_show", methods: ['GET'])]
     //El metodo que devuelve un ticket en particular por convencion REST es show()
-    public function show(string $id){
+    //El parametro $id identifica la ruta de ticket particular
+    public function show(string $id, Request $request){
 
         //se inicializa la variable $ticket como null, qie contendra el ticket encontrado
         $ticket = null;
+
 
         //se recorre el array de tickets para buscar el ticket con el id proporcionado
         foreach (self::TICKETS as $candidate){
@@ -96,25 +99,54 @@ final class TicketController extends AbstractController
             HTML;
             return new Response($html, Response::HTTP_NOT_FOUND);
         }
-        $html = <<<HTML
-            <!DOCTYPE html>
-            <html lang="es">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Ticket {$id}</title>
-            </head>
-            <body>
-                <main>
-                    <h1>Ticket {$id}</h1>
-                    <p>Title: {$ticket['title']}</p>
-                    <p>Priority: {$ticket['priority']}</p>
-                </main>
-                
-            </body>
-            </html>
+        //Voy a checkear si tengo parametros en la peticion/request (query)
+        //esto recupera el valor de view si existe en la URL:
+        //http://localhost8000/tickets/INC-1001?view=compact
+        //Si no existe le asigna a $view el valor por defecto 
+        
+        $view = $request->query->get('view','full');
 
-        HTML;
+        if($view==='compact'){
+            $html = <<<HTML
+                <!DOCTYPE html>
+                <html lang="es">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Ticket {$id}</title>
+                </head>
+                <body>
+                    <main>
+                        <h1>Ticket {$id}</h1>
+                        <p>Title: Compacta</p>
+                        
+                    </main>
+                    
+                </body>
+                </html>
+
+            HTML;
+        }else{
+            $html = <<<HTML
+                <!DOCTYPE html>
+                <html lang="es">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Ticket {$id}</title>
+                </head>
+                <body>
+                    <main>
+                        <h1>Ticket {$id}</h1>
+                        <p>Title: {$ticket['title']}</p>
+                        <p>Priority: {$ticket['priority']}</p>
+                    </main>
+                    
+                </body>
+                </html>
+    
+            HTML;
+        }
         return new Response($html, Response::HTTP_OK);
     }
 }
