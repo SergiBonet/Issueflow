@@ -26,38 +26,10 @@ final class TicketController extends AbstractController
     #[Route('/tickets', name: 'app_ticket_index', methods: ['GET'])]
     // El metodo que devuelve la lista de tickets por convencion REST es index()
     public function index(): Response{
-
-        //Se inicializa la variabe $items que contendra los <li> de cada incidencia
-        $items = '';
-
-        foreach (self::TICKETS as $ticket) {
-            $items .= "<li>{$ticket['id']}</a>: {$ticket['title']}({$ticket['priority']})</li>";
-        }
-        $total = count(self::TICKETS);
-        $title = 'Tickets';
-        $html = <<<HTML
-            <!DOCTYPE html>
-            <html lang="es">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>{$title}</title>
-            </head>
-            <body>
-                <main>
-                    <h1>{$title}</h1>
-                    <p>Total: {$total} incidencias</p>
-                    <ul>{$items}</ul>
-                    <p><a href="/">Pagina principal</a></p>
-                </main>
-                
-            </body>
-            </html>
-
-        HTML;
-
-    
-        return new Response($html, Response::HTTP_OK);
+         return $this->render('ticket/index.html.twig',[
+            'title' => 'Incidencias',
+            'tickets' => self::TICKETS            
+         ]);
     }
     //Ruta dinamica para mostrar un ticket especifico por su ID.
     #[Route('/tickets/{id}', name:"app_ticket_show", methods: ['GET'])]
