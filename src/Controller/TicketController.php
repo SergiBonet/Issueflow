@@ -31,94 +31,29 @@ final class TicketController extends AbstractController
             'tickets' => self::TICKETS            
          ]);
     }
+
     //Ruta dinamica para mostrar un ticket especifico por su ID.
     #[Route('/tickets/{id}', name:"app_ticket_show", methods: ['GET'])]
     //El metodo que devuelve un ticket en particular por convencion REST es show()
     //El parametro $id identifica la ruta de ticket particular
-    public function show(string $id, Request $request){
+    public function show(string $id){
+        $ticket = array_find(
+            self :: TICKETS,
+            fn(array $ticket): bool => $ticket['id'] === $id
+        );
 
-        //se inicializa la variable $ticket como null, qie contendra el ticket encontrado
-        $ticket = null;
-
-
-        //se recorre el array de tickets para buscar el ticket con el id proporcionado
-        foreach (self::TICKETS as $candidate){
-            if ($candidate['id'] === $id){
-                $ticket = $candidate;
-                break;
-            }
-
+        if ($ticket === null){
+            throw $this->createNotFoundException(
+                "No existe la incidencia " . $id
+            );
         }
-        //En este punto del codigo, si $ticket sigue siendo null, significa que no se encontro ningun ticket con el id proporcionado.
-        //Si es null voy a lanzar un error 404.
-        if ($ticket===null){
-            //throw $this->createNotFoundException('La incidencia no existe');
-            $html = <<<HTML
-                <!DOCTYPE html>
-                <html lang="es">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Ticket no existe</title>
-                </head>
-                <body>
-                    <h1>El ticket solicitado no existe</h1>
-                    <h2>***********Error 404***********</h2>
-                    <a href="/tickets">Volver a tickets</a>
-                </body>
-                </html>
+        /* So llego a esta linea es porque no se lanzo el error,
+        por lo tanto el $ticket no es null*/
 
-            HTML;
-            return new Response($html, Response::HTTP_NOT_FOUND);
-        }
-        //Voy a checkear si tengo parametros en la peticion/request (query)
-        //esto recupera el valor de view si existe en la URL:
-        //http://localhost8000/tickets/INC-1001?view=compact
-        //Si no existe le asigna a $view el valor por defecto 
-        
-        $view = $request->query->get('view','full');
-
-        if($view==='compact'){
-            $html = <<<HTML
-                <!DOCTYPE html>
-                <html lang="es">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Ticket {$id}</title>
-                </head>
-                <body>
-                    <main>
-                        <h1>Ticket {$id}</h1>
-                        <p>Title: Compacta</p>
-                        
-                    </main>
-                    
-                </body>
-                </html>
-
-            HTML;
-        }else{
-            $html = <<<HTML
-                <!DOCTYPE html>
-                <html lang="es">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Ticket {$id}</title>
-                </head>
-                <body>
-                    <main>
-                        <h1>Ticket {$id}</h1>
-                        <p>Title: {$ticket['title']}</p>
-                        <p>Priority: {$ticket['priority']}</p>
-                    </main>
-                    
-                </body>
-                </html>
-    
-            HTML;
-        }
-        return new Response($html, Response::HTTP_OK);
+        /*Envio a la plantilla correspondiente los datos del ticket 
+        encontrado que es: $ticket */
+        return $this->render('ticket/show.html.twig',[
+            'ticket' => $ticket
+        ]);
     }
 }
