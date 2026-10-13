@@ -3,14 +3,27 @@
 declare(strict_types =1);
 
 namespace App\Controller;
+
 //Clase de symfony para construir las respuestas para el cliente
 use Symfony\Component\HttpFoundation\Response;
-
 //Clase de symfony para definir las rutas
 use Symfony\Component\Routing\Attribute\Route;
 
+/*Clase de symfony para asociar un metodo del controlador con una plantilla Twig,
+de manera que el metodo devuelva un array con los datos a renderizar en la pantalla
+Lo necesitamos para poder usar la anotacion #[Template('home/index.html.twig')]
+en el metodo del controlador, y que twig renderice la plantilla con los datos
+devueltos por el metodo*/
+//use Symfony\Bridge\Twig\Attribute\Template;
+
+/* Para poder usar el método render() de la clase AbstractController,
+   necesitamos primero importar la clase AbstractController, 
+   y luego extender nuestra clase HomeController de ella.
+*/
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
 //Clase controlador HomeController
-final class HomeController{
+final class HomeController extends AbstractController{
 
     /*Definiimos una ruta para este controlador
     La ruta sera la de home, '/' -> 1er argumento
@@ -20,33 +33,20 @@ final class HomeController{
     el cual genera la respuesta para el cliente, que sera un objeto de la clase Response.*/
 
     #[Route('/',name:'app_home',methods: ['GET'])]
-    public function index():Response {
-        $projectName = 'IssueFlow';
-        $message = 'Symfony ha recibido la peticion y ha devuelto un Response';
-        //Creamos una variable que contiene el archivo HTML.
-        $html = <<<HTML
-            <!DOCTYPE html>
-            <html lang="es">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>{$projectName}</title>
-            </head>
-            <body>
-                <main>
-                    <h1>{$projectName}</h1>
-                    <p>{$message}</p>
-                    <p><a href="/tickets">Ver Incidencias</a></p>
-                    <p><a href="/health">Comprobar estado</a></p>
-                </main>
-                
-            </body>
-            </html>
 
-        HTML;
+    /* Comentado el #[Template('home/index.html.twig')] porque no lo necesitamos, 
+    ya que estamos usando el método render() de la clase AbstractController */
+    //#[Template('home/index.html.twig')]
+    public function index(): Response{//En caso de usaar #[Template('...')], el tipo de retorno seria array.
 
-        //Retornamos la respuesta
-        return new Response($html, Response::HTTP_OK);
+        /*Retorno un objeto Response a traves del metodo Render,
+        el primer argumento de render corresponde  a la plantilla i
+        el segundo al array de datos*/
+        return $this->render('home/index.html.twig',
+            [
+            'projectName' => 'IssueFlow',
+            'message' => 'Symfony 8.1 ha resuelto la ruta y twig ha construido la vista'
+            ]);
     }
     
     #[Route('/health',name:'app_health',methods: ['GET'])]

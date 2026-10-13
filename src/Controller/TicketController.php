@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use PHPUnit\Framework\Attributes\Ticket;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
-final class TicketController
+//Mi clase TicketController hereda de AbstractController de Symfony.
+final class TicketController extends AbstractController
 {
     /*En este caso los tickets se definen de forma estatica.
     En un caso real se obtendria de una base de datos*/
@@ -24,75 +26,34 @@ final class TicketController
     #[Route('/tickets', name: 'app_ticket_index', methods: ['GET'])]
     // El metodo que devuelve la lista de tickets por convencion REST es index()
     public function index(): Response{
-
-        //Se inicializa la variabe $items que contendra los <li> de cada incidencia
-        $items = '';
-
-        foreach (self::TICKETS as $ticket) {
-            $items .= "<li>{$ticket['id']}</a>: {$ticket['title']}({$ticket['priority']})</li>";
-        }
-        $total = count(self::TICKETS);
-        $title = 'Tickets';
-        $html = <<<HTML
-            <!DOCTYPE html>
-            <html lang="es">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>{$title}</title>
-            </head>
-            <body>
-                <main>
-                    <h1>{$title}</h1>
-                    <p>Total: {$total} incidencias</p>
-                    <ul>{$items}</ul>
-                    <p><a href="/">Pagina principal</a></p>
-                </main>
-                
-            </body>
-            </html>
-
-        HTML;
-
-    
-        return new Response($html, Response::HTTP_OK);
+         return $this->render('ticket/index.html.twig',[
+            'title' => 'Incidencias',
+            'tickets' => self::TICKETS            
+         ]);
     }
+
     //Ruta dinamica para mostrar un ticket especifico por su ID.
     #[Route('/tickets/{id}', name:"app_ticket_show", methods: ['GET'])]
     //El metodo que devuelve un ticket en particular por convencion REST es show()
+    //El parametro $id identifica la ruta de ticket particular
     public function show(string $id){
+        $ticket = array_find(
+            self :: TICKETS,
+            fn(array $ticket): bool => $ticket['id'] === $id
+        );
 
-        //se inicializa la variable $ticket como null, qie contendra el ticket encontrado
-        $ticket = null;
-
-        //se recorre el array de tickets para buscar el ticket con el id proporcionado
-        foreach (self::TICKETS as $candidate){
-            if ($candidate['id'] === $id){
-                $ticket = $candidate;
-                break;
-            }
-
+        if ($ticket === null){
+            throw $this->createNotFoundException(
+                "No existe la incidencia " . $id
+            );
         }
+        /* So llego a esta linea es porque no se lanzo el error,
+        por lo tanto el $ticket no es null*/
 
-        $html = <<<HTML
-            <!DOCTYPE html>
-            <html lang="es">
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Ticket {$id}</title>
-            </head>
-            <body>
-                <main>
-                    <h1>Ticket {$id}</h1>
-                    <p>Title: {$ticket['title']}</p>
-                    <p>Priority: {$ticket['priority']}</p>
-                </main>
-                
-            </body>
-            </html>
-
-        HTML;
-        return new Response($html, Response::HTTP_OK);
+        /*Envio a la plantilla correspondiente los datos del ticket 
+        encontrado que es: $ticket */
+        return $this->render('ticket/show.html.twig',[
+            'ticket' => $ticket
+        ]);
     }
 }
