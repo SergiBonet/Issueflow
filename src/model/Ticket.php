@@ -52,7 +52,34 @@ final class Ticket{
     public function isUrgent(){
         return $this->priority === 'urgent';
     }
+
+    /*Este metodo crea  temporalmente los ticket en memoria.(Antes usabamos
+    una constante de clase) Mas adelante este trabajo lo hara una capa de 
+    persistencia/Repository conectado a Doctrine y MySQL 
+    Un metodo estatico puede ser llamdo directamente desde la clase sin
+    haber instanciado un objeto: Ticket::getAllTickets();
+    
+    */
+    public static function getAllTickets(): array{
+        return [
+                new Ticket(
+                    id: 'INC-1001',
+                    title: 'No puedo iniciar sesión',
+                    priority: 'urgent',
+                ),
+                new Ticket(
+                    id: 'INC-1002',
+                    title: 'Error en la factura',
+                    priority: 'high',
+                ),
+                new Ticket(
+                    id: 'INC-1003',
+                    title: 'Actualizar datos de contacto',
+                    priority: 'normal',
+                ),
+            ];
+    }
+    
 }
-
-
+    
 ?>

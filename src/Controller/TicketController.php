@@ -4,31 +4,22 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Ticket;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
 //Mi clase TicketController hereda de AbstractController de Symfony.
-final class TicketController extends AbstractController
-{
-    /*En este caso los tickets se definen de forma estatica.
-    En un caso real se obtendria de una base de datos*/
-    /*TICKETS es un array donde cada elemento es un ticket en particular
-    cada ticket es un array asociativo, que contiene los datos o propiedades de este*/
-    //Esto es una constante de clase 
-    private const TICKETS = [
-        ['id' => 'INC-1001', 'title' => 'No puedo iniciar sesión', 'priority' => 'urgent'],
-        ['id' => 'INC-1002', 'title' => 'Error en la factura', 'priority' => 'high'],
-        ['id' => 'INC-1003', 'title' => 'Actualizar datos de contacto', 'priority' => 'normal'],
-    ];
-    
+
+
+final class TicketController extends AbstractController{
     #[Route('/tickets', name: 'app_ticket_index', methods: ['GET'])]
     // El metodo que devuelve la lista de tickets por convencion REST es index()
     public function index(): Response{
          return $this->render('ticket/index.html.twig',[
             'title' => 'Incidencias',
-            'tickets' => self::TICKETS            
+            'tickets' => Ticket::getAllTickets()         
          ]);
     }
 
@@ -38,7 +29,7 @@ final class TicketController extends AbstractController
     //El parametro $id identifica la ruta de ticket particular
     public function show(string $id){
         $ticket = array_find(
-            self :: TICKETS,
+            Ticket::getAllTickets() ,
             fn(array $ticket): bool => $ticket['id'] === $id
         );
 
