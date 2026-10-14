@@ -29,8 +29,8 @@ final class TicketController extends AbstractController{
     //El parametro $id identifica la ruta de ticket particular
     public function show(string $id){
         $ticket = array_find(
-            Ticket::getAllTickets() ,
-            fn(array $ticket): bool => $ticket['id'] === $id
+            Ticket::getAllTickets(),
+            fn(Ticket $ticket): bool =>$ticket->getId() === $id
         );
 
         if ($ticket === null){
