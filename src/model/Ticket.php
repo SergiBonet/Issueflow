@@ -31,7 +31,7 @@ final class Ticket{
         private string $id,
         private string $title,
         private TicketPriority $priority,
-        private string $status
+        private TicketStatus $status
     ){}
     
 
@@ -48,7 +48,7 @@ final class Ticket{
         return $this->priority;
     }
 
-    public function getStatus(): string {
+    public function getStatus(): TicketStatus {
         return $this->status;
     }
     
@@ -57,11 +57,11 @@ final class Ticket{
     cual retorne true si la prioridad es 'urgent', o false en el caso contrario
     o flase en caso contrario*/
     public function isUrgent():bool {
-        return ($this->priority->isUrgent());
+        return $this->priority->isUrgent();
     }
 
     public function isOpen():bool {
-        return $this->status === 'open';
+        return $this->status->isOpen();
     }
 
     /*Este metodo crea  temporalmente los ticket en memoria.(Antes usabamos
@@ -77,19 +77,19 @@ final class Ticket{
                     id: 'INC-1001',
                     title: 'No puedo iniciar sesión',
                     priority: TicketPriority::Urgent,
-                    status:'open'
+                    status:TicketStatus::Open
                 ),
                 new Ticket(
                     id: 'INC-1002',
                     title: 'Error en la factura',
                     priority: TicketPriority::High,
-                    status: 'in_progres'
+                    status: TicketStatus::InProgres
                 ),
                 new Ticket(
                     id: 'INC-1003',
                     title: 'Actualizar datos de contacto',
                     priority: TicketPriority::Normal,
-                    status: 'closed'
+                    status: TicketStatus::Closed
                 ),
             ];
     }
