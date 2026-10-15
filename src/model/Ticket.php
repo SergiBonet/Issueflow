@@ -30,7 +30,7 @@ final class Ticket{
     public function __construct(
         private string $id,
         private string $title,
-        private string $priority,
+        private TicketPriority $priority,
         private string $status
     ){}
     
@@ -44,7 +44,7 @@ final class Ticket{
         return $this->title;
     }
 
-    public function getPriority(): string {
+    public function getPriority(): TicketPriority {
         return $this->priority;
     }
 
@@ -52,10 +52,12 @@ final class Ticket{
         return $this->status;
     }
     
-    /*Crear un metodo isUrgent() que retorne true si la prioridad es 'urgent',
+    /*Crear un metodo isUrgent() que invoca a traves
+    del atrributo priority al metodo isUrgent() de TicketPriority ek 
+    cual retorne true si la prioridad es 'urgent', o false en el caso contrario
     o flase en caso contrario*/
     public function isUrgent():bool {
-        return $this->priority === 'urgent';
+        return ($this->priority->isUrgent());
     }
 
     public function isOpen():bool {
@@ -74,19 +76,19 @@ final class Ticket{
                 new Ticket(
                     id: 'INC-1001',
                     title: 'No puedo iniciar sesión',
-                    priority: 'urgent',
+                    priority: TicketPriority::Urgent,
                     status:'open'
                 ),
                 new Ticket(
                     id: 'INC-1002',
                     title: 'Error en la factura',
-                    priority: 'high',
+                    priority: TicketPriority::High,
                     status: 'in_progres'
                 ),
                 new Ticket(
                     id: 'INC-1003',
                     title: 'Actualizar datos de contacto',
-                    priority: 'normal',
+                    priority: TicketPriority::Normal,
                     status: 'closed'
                 ),
             ];
