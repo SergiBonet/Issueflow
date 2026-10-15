@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Model\Ticket;
+use App\Service\TicketCatalog;
+use Doctrine\Common\Collections\Expr\Value;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,13 +15,17 @@ use Symfony\Component\Routing\Attribute\Route;
 //Mi clase TicketController hereda de AbstractController de Symfony.
 
 
-final class TicketController extends AbstractController{
+final class TicketController extends AbstractController
+{   
+    //Inyeccion de dependencias
+    public function __construct(private TicketCatalog $ticketCatalog,){}
+
     #[Route('/tickets', name: 'app_ticket_index', methods: ['GET'])]
     // El metodo que devuelve la lista de tickets por convencion REST es index()
     public function index(): Response{
          return $this->render('ticket/index.html.twig',[
             'title' => 'Incidencias',
-            'tickets' => Ticket::getAllTickets()         
+            'tickets' => $this ->ticketCatalog->all()
          ]);
     }
 
@@ -28,10 +34,8 @@ final class TicketController extends AbstractController{
     //El metodo que devuelve un ticket en particular por convencion REST es show()
     //El parametro $id identifica la ruta de ticket particular
     public function show(string $id){
-        $ticket = array_find(
-            Ticket::getAllTickets(),
-            fn(Ticket $ticket): bool =>$ticket->getId() === $id
-        );
+        
+        $ticket = $this -> ticketCatalog->find($id);
 
         if ($ticket === null){
             throw $this->createNotFoundException(
