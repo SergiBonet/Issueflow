@@ -3,6 +3,9 @@
 declare(strict_types=1);
 
 namespace App\Model;
+use InvalidArgumentException;
+
+use function PHPUnit\Framework\throwException;
 
 /*
 final class Ticket{
@@ -28,11 +31,26 @@ final class Ticket{
 final class Ticket{
     
     public function __construct(
-        private string $id,
+        private readonly string $id,
         private string $title,
         private TicketPriority $priority,
         private TicketStatus $status
-    ){}
+    ){
+        /* Verificamos la forma del id comparando con una regex(expression regular)*/
+        if (preg_match('/^INC-\d{4}$/', $this->id) !== 1){
+            throw new InvalidArgumentException('El formato del id del ticket no es valido');
+        }
+        
+        /*Hacemos un trim (eliminar espacios antes i despues) de title */
+        $normalizedTitle = trim($title);
+
+        //Verificamos que la cadena de texto no este vacia
+        if ($normalizedTitle === ''){
+            throw new InvalidArgumentException();
+        }
+
+        $this->title = $normalizedTitle;
+    }
     
 
     /* Crear los getters, para cada una de las propiedades*/
