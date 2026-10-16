@@ -18,7 +18,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class TicketController extends AbstractController
 {   
     //Inyeccion de dependencias
-    public function __construct(private TicketCatalog $ticketCatalog,){}
+    public function __construct(private readonly TicketCatalog $ticketCatalog,){}
 
     #[Route('/tickets', name: 'app_ticket_index', methods: ['GET'])]
     // El metodo que devuelve la lista de tickets por convencion REST es index()
