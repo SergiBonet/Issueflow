@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Contract\TicketCatalogInterface;
-use App\Service\TicketSlaCalculator;
+use App\Contract\TicketSlaCalculatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -18,7 +18,7 @@ final class TicketController extends AbstractController
     //Inyeccion de dependencias
     public function __construct(
         private readonly TicketCatalogInterface $ticketCatalog,
-        private readonly TicketSlaCalculator $ticketSlaCalculator,
+        private readonly TicketSlaCalculatorInterface $ticketSlaCalculator,
     ){}
 
     #[Route('/tickets', name: 'app_ticket_index', methods: ['GET'])]

@@ -8,12 +8,13 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Contract\TicketSlaCalculatorInterface;
 use App\Model\Ticket;
 use App\Model\TicketPriority;
 
-final class TicketSlaCalculator{
+final class TicketSlaCalculator implements TicketSlaCalculatorInterface{
     
-    public function getResponseTargetHours(Ticket $ticket ){
+    public function getResponseTargetHours(Ticket $ticket ):int{
         return match($ticket -> getPriority()) {
             TicketPriority::Urgent => 4,
             TicketPriority::High => 8,
