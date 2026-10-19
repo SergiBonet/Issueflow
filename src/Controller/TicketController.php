@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Contract\TicketCatalogInterface;
 use App\Contract\TicketSlaCalculatorInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -19,6 +20,7 @@ final class TicketController extends AbstractController
     public function __construct(
         private readonly TicketCatalogInterface $ticketCatalog,
         private readonly TicketSlaCalculatorInterface $ticketSlaCalculator,
+        private readonly LoggerInterface $logger
     ){}
 
     #[Route('/tickets', name: 'app_ticket_index', methods: ['GET'])]
@@ -39,6 +41,13 @@ final class TicketController extends AbstractController
         $ticket = $this -> ticketCatalog->find($id);
 
         if ($ticket === null){
+            /*Usamos logger para conservar en el log informacion sobre este error */
+            $this->logger->warning("Se solicito una incidencia inexistente.", [
+                'ticket_id' => $id,
+                'route' => 'app_ticket_show'
+            ]);
+            /*Lanzamos el error, no lo manejamos aqui, dejamos que symfony
+            lo capture y lo transforme en una pagina 404 */
             throw $this->createNotFoundException(
                 "No existe la incidencia " . $id
             );
