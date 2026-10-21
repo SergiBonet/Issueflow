@@ -9,13 +9,13 @@ namespace App\Model;
 enum TicketStatus :string {
 
     case Open = 'open';
-    case InProgres = 'in_progres';
+    case InProgress = 'in_progress';
     case Closed = 'closed';
     
     public function getLabel(): string{
         return match($this){
             self::Open => 'Abierto',
-            self::InProgres => 'En progreso',
+            self::InProgress => 'En progreso',
             self::Closed => 'Cerrado'
         };
     }

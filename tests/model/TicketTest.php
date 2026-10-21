@@ -6,12 +6,14 @@ namespace App\Tests\model;
 use App\Model\Ticket;
 use App\Model\TicketPriority;
 use App\Model\TicketStatus;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\Test;
 use InvalidArgumentException;
 
 final class TicketTest extends TestCase
 {
+
     /*
     Puedo realizar varios test unitarios para la clase Ticket.
     En general un test unitario tiene la siguiente estructura:
@@ -36,17 +38,39 @@ final class TicketTest extends TestCase
         self::assertSame('No puede iniciar sesion',$ticket->getTitle());
     }
 
+    /* Cambiar este test para que mediante el uso de un data provider,
+    se prueben distintos id's inválidos:
+    'Ticket0001'
+    'INC-101'
+    INC-12345'
+    'INC_1001'
+    'inc-2345'
+    ''
+    */
+    public static function idProvider():iterable
+    {
+        /*Yield emite cada uno de los casos */
+        yield 'non_inc_prefix'=> ['Ticket0001'];
+        yield 'too_few_digits'=> ['INC-101'];
+        yield 'too_many_digits'=> ['INC-12345'];
+        yield 'wrong_separator'=> ['INC_1001'];
+        yield 'lowercase_prefix'=> ['inc-2345'];
+        yield 'empty_string'=> [''];
+    }
+
     #[Test]
-    public function it_rejects_an_invalid_identifier(): void
+    #[DataProvider('idProvider')]
+    public function it_rejects_an_invalid_identifier(string $id): void
     {
         $this->expectException(InvalidArgumentException::class);
-        new Ticket(
-            id: 'Ticket0001',
-            title: 'Incidencia válida',
-            priority: TicketPriority::Low,
-            status:TicketStatus::InProgres
-        );
+            new Ticket(
+            id: $id,
+            title: 'Incidencia de prueba',
+            priority: TicketPriority::High,
+            status:TicketStatus::InProgress
+            );
     }
+
 
     #[Test]
     public function it_rejects_an_empty_title(): void
@@ -56,7 +80,7 @@ final class TicketTest extends TestCase
             id: 'INC-0001',
             title: '',
             priority: TicketPriority::Low,
-            status:TicketStatus::InProgres
+            status:TicketStatus::InProgress
         );
     
     }
