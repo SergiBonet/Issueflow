@@ -1,9 +1,10 @@
 <?php
-declare (strict_types=1);
+
+declare(strict_types=1);
 
 namespace App\Tests\Service;
 
-use App\Model\Ticket;
+use App\Entity\Ticket;
 use App\Model\TicketPriority;
 use App\Model\TicketStatus;
 use App\Service\TicketSlaCalculator;
@@ -13,13 +14,13 @@ use PHPUnit\Framework\Attributes\Test;
 
 final class TicketSlaCalculatorTest extends TestCase
 {
-    public static function priorityProvider():iterable
+    public static function priorityProvider(): iterable
     {
         /*Yield emite cada uno de los casos */
-        yield 'urgent' => [TicketPriority::Urgent,4];
-        yield 'high' => [TicketPriority::High,8];
-        yield 'normal' => [TicketPriority::Normal,24];
-        yield 'low' => [TicketPriority::Low,72];
+        yield 'urgent' => [TicketPriority::Urgent, 4];
+        yield 'high' => [TicketPriority::High, 8];
+        yield 'normal' => [TicketPriority::Normal, 24];
+        yield 'low' => [TicketPriority::Low, 72];
     }
 
     #[Test]
@@ -27,14 +28,13 @@ final class TicketSlaCalculatorTest extends TestCase
     public function it_calculates_the_response_target_for_each_priority(
         TicketPriority $priority,
         int $expectedHours
-    ): void
-    {
+    ): void {
         //Creo un ticket para la prueba del calculo de horas segun prioridad
         $ticket = new Ticket(
-            id: 'INC-2001',
+            code: 'INC-2001',
             title: 'Incidencia de prueba',
             priority: $priority,
-            status:TicketStatus::InProgress
+            status: TicketStatus::InProgress
         );
 
         //Instancio un TicketSlaCalculator para poder llamar al metodo getResponseTargetHours().
@@ -42,11 +42,9 @@ final class TicketSlaCalculatorTest extends TestCase
 
         /*calculo la cantidad de horas correspondientes al ticket
         usando el metodo getResponseTargetHours()*/
-        $hours= $calculator->getResponseTargetHours($ticket);
+        $hours = $calculator->getResponseTargetHours($ticket);
 
         /*Compruebo si las horas calculadas son iguales al valor esperado*/
-        self::assertSame($expectedHours,$hours);
-
+        self::assertSame($expectedHours, $hours);
     }
 }
-

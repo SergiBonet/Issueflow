@@ -1,16 +1,19 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Service;
 
 use App\Contract\TicketCatalogInterface;
-use App\Model\Ticket;
+use App\Entity\Ticket;
 use App\Model\TicketPriority;
 use App\Model\TicketStatus;
+use Override;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 
 #[AsAlias(TicketCatalogInterface::class)]
-final class InMemoryTicketCatalog implements TicketCatalogInterface{
+final class InMemoryTicketCatalog implements TicketCatalogInterface
+{
     private array $tickets;
 
     public function __construct()
@@ -19,19 +22,19 @@ final class InMemoryTicketCatalog implements TicketCatalogInterface{
         // responsabilidad del objeto que los mantiene.
         $this->tickets = [
             new Ticket(
-                id: 'INC-1001',
+                code: 'INC-1001',
                 title: 'No puedo iniciar sesión',
                 priority: TicketPriority::Urgent,
                 status: TicketStatus::Open,
             ),
             new Ticket(
-                id: 'INC-1002',
+                code: 'INC-1002',
                 title: 'Error en la factura',
                 priority: TicketPriority::High,
                 status: TicketStatus::InProgress,
             ),
             new Ticket(
-                id: 'INC-1003',
+                code: 'INC-1003',
                 title: 'Actualizar datos de contacto',
                 priority: TicketPriority::Normal,
                 status: TicketStatus::Closed,
@@ -40,16 +43,17 @@ final class InMemoryTicketCatalog implements TicketCatalogInterface{
     }
 
     //all() retorna el listado de los tickets
-    public function all() : array {
+    public function all(): array
+    {
         return $this->tickets;
     }
 
     //find() retorna un ticket dado su $id o null si no existe
-    public function find(string $id): ?Ticket {
-         return array_find(
+    #[Override]
+    public function findByCode(string $code): ?Ticket{
+        return array_find(
             $this->tickets,
-            fn(Ticket $ticket): bool =>$ticket->getId() === $id
+            fn(Ticket $ticket): bool => $ticket->getCode() === $code
         );
     }
 }
-?> 

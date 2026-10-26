@@ -4,24 +4,25 @@ tipos de priority de un ticket, un valor en horas de la siguiente manera:
 Los tickets Urgent 4 horas, High 8 horas, Normal 24 horas, Low 72 horas.
 El servicio solo va a tener un metodo getResponseTargetHours() que recibe
 como argumento un Ticket y retorna el número de horas adecuado */
+
 declare(strict_types=1);
 
 namespace App\Service;
 
 use App\Contract\TicketSlaCalculatorInterface;
-use App\Model\Ticket;
+use App\Entity\Ticket;
 use App\Model\TicketPriority;
 
-final class TicketSlaCalculator implements TicketSlaCalculatorInterface{
-    
-    public function getResponseTargetHours(Ticket $ticket ):int{
-        return match($ticket -> getPriority()) {
+final class TicketSlaCalculator implements TicketSlaCalculatorInterface
+{
+
+    public function getResponseTargetHours(Ticket $ticket): int
+    {
+        return match ($ticket->getPriority()) {
             TicketPriority::Urgent => 4,
             TicketPriority::High => 8,
             TicketPriority::Normal => 24,
             TicketPriority::Low => 72
-            };
+        };
     }
 }
-
-?>

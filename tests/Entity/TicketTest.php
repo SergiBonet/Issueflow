@@ -1,9 +1,10 @@
 <?php
-declare (strict_types=1);
 
-namespace App\Tests\model;
+declare(strict_types=1);
 
-use App\Model\Ticket;
+namespace App\Tests\Entity;
+
+use App\Entity\Ticket;
 use App\Model\TicketPriority;
 use App\Model\TicketStatus;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -25,17 +26,17 @@ final class TicketTest extends TestCase
     public function it_normalizes_the_title_when_the_ticket_is_created(): void
     {
         $ticket = new Ticket(
-            id: 'INC-1001',
+            code: 'INC-1001',
             title: '            No puede iniciar sesion         ',
             priority: TicketPriority::Urgent,
-            status:TicketStatus::Open
+            status: TicketStatus::Open
         );
 
         /*
         Assert: verificamos el comportamiento observable esperado 
         1r argumento: que resultado espero yo obtener
         */
-        self::assertSame('No puede iniciar sesion',$ticket->getTitle());
+        self::assertSame('No puede iniciar sesion', $ticket->getTitle());
     }
 
     /* Cambiar este test para que mediante el uso de un data provider,
@@ -47,28 +48,28 @@ final class TicketTest extends TestCase
     'inc-2345'
     ''
     */
-    public static function idProvider():iterable
+    public static function codeProvider(): iterable
     {
         /*Yield emite cada uno de los casos */
-        yield 'non_inc_prefix'=> ['Ticket0001'];
-        yield 'too_few_digits'=> ['INC-101'];
-        yield 'too_many_digits'=> ['INC-12345'];
-        yield 'wrong_separator'=> ['INC_1001'];
-        yield 'lowercase_prefix'=> ['inc-2345'];
-        yield 'empty_string'=> [''];
+        yield 'non_inc_prefix' => ['Ticket0001'];
+        yield 'too_few_digits' => ['INC-101'];
+        yield 'too_many_digits' => ['INC-12345'];
+        yield 'wrong_separator' => ['INC_1001'];
+        yield 'lowercase_prefix' => ['inc-2345'];
+        yield 'empty_string' => [''];
     }
 
     #[Test]
-    #[DataProvider('idProvider')]
-    public function it_rejects_an_invalid_identifier(string $id): void
+    #[DataProvider('codeProvider')]
+    public function it_rejects_an_invalid_identifier(string $code): void
     {
         $this->expectException(InvalidArgumentException::class);
-            new Ticket(
-            id: $id,
+        new Ticket(
+            code: $code,
             title: 'Incidencia de prueba',
             priority: TicketPriority::High,
-            status:TicketStatus::InProgress
-            );
+            status: TicketStatus::InProgress
+        );
     }
 
 
@@ -77,27 +78,24 @@ final class TicketTest extends TestCase
     {
         $this->expectException(InvalidArgumentException::class);
         new Ticket(
-            id: 'INC-0001',
+            code: 'INC-0001',
             title: '',
             priority: TicketPriority::Low,
-            status:TicketStatus::InProgress
+            status: TicketStatus::InProgress
         );
-    
     }
 
     #[Test]
-     public function it_reports_when_a_ticket_is_urgent(): void
-     {
+    public function it_reports_when_a_ticket_is_urgent(): void
+    {
         $ticket = new Ticket(
-            id: 'INC-1003',
+            code: 'INC-1003',
             title: 'Servidor no disponible',
             priority: TicketPriority::Urgent,
             status: TicketStatus::Open
         );
         self::assertTrue($ticket->isUrgent());
-     }
-
-   
+    }
 }
 
 /*TDD: Test Driven development

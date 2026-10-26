@@ -2,43 +2,52 @@
 /*Crear la clase Ticket con las propiedades que ya veniamos usando i añadir un constructor */
 declare(strict_types=1);
 
-namespace App\Model;
+namespace App\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Doctrine\DBAL\Types\Types;
 use InvalidArgumentException;
-
-use function PHPUnit\Framework\throwException;
+use App\Model\TicketPriority;
+use App\Model\TicketStatus;
+use PhpParser\Node\Scalar\String_;
 
 /*
-final class Ticket{
-    private string $id;
-    private string $title;
-    private string $priority;
-
-    public function __construct(string $id, string $title, string $priority){
-        $this->id = $id;
-        $this->title = $title;
-        $this->priority = $priority;
-
-    }
-}
+* Entity Doctrine de una incidencia de IssueFlow.
+*
+* Sigue siendo un objeto PHP con reglas de dominio. Los atributos #[ORM\ ... ]
+* añaden el mapping necesario para que Doctrine sepa cómo persistirlo.
 */
-/*
-     * Constructor Property Promotion (PHP moderno).
+#[ORM\Entity]
+#[ORM\Table(name: 'tickets')]
+final class Ticket{
+    /**
+     * Identificador técnico de base de datos.
      *
-     * Al escribir "private string $id" dentro del constructor, PHP hace dos
-     * cosas: declara la propiedad y asigna automáticamente el argumento recibido.
-     * Esto evita repetir la declaración y la asignación manual de cada propiedad.
-*/
-final class Ticket{
-    
+     * Empieza en null porque una Entity recién creada todavía no ha sido
+     * insertada. Doctrine/la base asignarán el valor al persistirla.
+     */
+
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type:Types::BIGINT,options: ['unsigned' =>true])]
+    private ?int $id = null;
     public function __construct(
-        private readonly string $id,
+        #[ORM\Column(length: 8, unique: true)]
+        private readonly string $code,
+
+        #[ORM\Column(length:180, unique: false)]
         private string $title,
+
+        #[ORM\Column(length: 20,enumType: TicketPriority::class)]
         private TicketPriority $priority,
-        private TicketStatus $status
+
+        #[ORM\Column(length: 20,enumType: TicketStatus::class)]
+        private TicketStatus $status =  TicketStatus::Open
+
     ){
         /* Verificamos la forma del id comparando con una regex(expression regular)*/
-        if (preg_match('/^INC-\d{4}$/', $this->id) !== 1){
-            throw new InvalidArgumentException('El formato del id del ticket no es valido');
+        if (preg_match('/^INC-\d{4}$/', $this->code ) !== 1){
+            throw new InvalidArgumentException('El formato del codigo del ticket no es valido');
         }
         
         /*Hacemos un trim (eliminar espacios antes i despues) de title */
@@ -54,8 +63,11 @@ final class Ticket{
     
 
     /* Crear los getters, para cada una de las propiedades*/
-    public function getId(): string {
+    public function getId(): ?int {
         return $this->id;
+    }
+    public function getCode() : string {
+        return $this ->code;
     }
 
     public function getTitle(): string {

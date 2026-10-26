@@ -33,23 +33,23 @@ final class TicketController extends AbstractController
     }
 
     //Ruta dinamica para mostrar un ticket especifico por su ID.
-    #[Route('/tickets/{id}', name:"app_ticket_show", methods: ['GET'])]
+    #[Route('/tickets/{code}', name:"app_ticket_show", methods: ['GET'])]
     //El metodo que devuelve un ticket en particular por convencion REST es show()
     //El parametro $id identifica la ruta de ticket particular
-    public function show(string $id){
+    public function show(string $code){
         
-        $ticket = $this -> ticketCatalog->find($id);
+        $ticket = $this -> ticketCatalog->findByCode($code);
 
         if ($ticket === null){
             /*Usamos logger para conservar en el log informacion sobre este error */
             $this->logger->warning("Se solicito una incidencia inexistente.", [
-                'ticket_id' => $id,
+                'ticket_code' => $code,
                 'route' => 'app_ticket_show'
             ]);
             /*Lanzamos el error, no lo manejamos aqui, dejamos que symfony
             lo capture y lo transforme en una pagina 404 */
             throw $this->createNotFoundException(
-                "No existe la incidencia " . $id
+                "No existe la incidencia " . $code
             );
         }
         /* So llego a esta linea es porque no se lanzo el error,
