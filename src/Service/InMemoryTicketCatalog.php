@@ -9,9 +9,8 @@ use App\Entity\Ticket;
 use App\Model\TicketPriority;
 use App\Model\TicketStatus;
 use Override;
-use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 
-#[AsAlias(TicketCatalogInterface::class)]
+
 final class InMemoryTicketCatalog implements TicketCatalogInterface
 {
     private array $tickets;
