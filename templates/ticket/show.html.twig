@@ -17,6 +17,22 @@
         <p>Prioridad: <strong>{{ ticket.priority.label}}</strong></p>
         <p>Status: <strong>{{ ticket.status.label }}</strong></p>
         <p>Objetivo de respuesta: <strong>{{responseTargetHours }}</strong></p>
+        <p>
+            Categoria:
+            {% if ticket.category %}
+                {{ ticket.category.name  }} 
+            {% else %}
+                Sin Categoria
+            {% endif %}
+        </p>
+        <p>
+            Asignado a:
+            {% if ticket.assigne %}
+                {{ ticket.assigne.name }}
+            {% else %}
+                Sin Asignar
+            {% endif %}
+        </p>
         {# Quiero mostrar un mensaje si la priority del ticket es 'urgent' 
         ticket.urgent resuelve el metodo isUrgent()#}
         {% if ticket.urgent %}

@@ -9,7 +9,24 @@
         <h2>{{ ticket.title }}</h2>
         <p>Prioridad: <strong> {{ticket.priority.label}}</strong></p>
         <p>Status: <strong>{{ ticket.status.label }}</strong></p>
+        <p>
+            Categoria:
+            {% if ticket.category %}
+                {{ ticket.category.name  }} 
+            {% else %}
+                Sin Categoria
+            {% endif %}
+        </p>
+        <p>
+            Asignado a:
+            {% if ticket.assigne %}
+                {{ ticket.assigne.name }}
+            {% else %}
+                Sin Asignar
+            {% endif %}
+        </p>
     </div>
+
     {#
     Creamos un enlace para navegar a la página de un ticket en
     particular, ruta /tickets/{code}
