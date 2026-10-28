@@ -30,7 +30,7 @@ final class Category
 
     public function __construct(
         #[ORM\Column(length: 120, unique:true)]
-        private readonly string $name,
+        private string $name,
     ) {
 
         //Normalizamos $name

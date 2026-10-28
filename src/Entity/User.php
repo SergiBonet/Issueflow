@@ -24,7 +24,7 @@ final class User
 
     public function __construct(
         #[ORM\Column(length: 120)]
-        private readonly string $name,
+        private string $name,
 
         #[ORM\Column(length: 120, unique: true)]
         private string $email,
