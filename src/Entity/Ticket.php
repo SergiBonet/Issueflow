@@ -32,6 +32,32 @@ final class Ticket{
     #[ORM\GeneratedValue]
     #[ORM\Column(type:Types::BIGINT,options: ['unsigned' =>true])]
     private ?int $id = null;
+
+    /**
+     * Esta es una relación unidireccional. Ticket es el lado propietario
+     * porque la FK category_id vive en la tabla tickets.
+     */
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?User $assigne = null;
+
+    /*
+    * Esta es una relación bidireccional. Ticket es el lado propietario
+    * porque la FK category_id vive en la tabla tickets.
+    * Category: :$tickets es el lado inverso y usa mappedBy="category"
+    */
+    #[ORM\ManyToOne(inversedBy: 'tickets')]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?Category $category = null;
+
+
+    /*
+    * Constructor Property Promotion (PHP moderno).
+    *
+    * Al escribir "private string $code" dentro del constructor, PHP hace dos
+    * cosas: declara la propiedad y asigna automáticamente el argumento recibido.
+    * Esto evita repetir la declaración y la asignación manual de cada propiedad.
+    */
     public function __construct(
         #[ORM\Column(length: 8, unique: true)]
         private readonly string $code,
@@ -83,6 +109,21 @@ final class Ticket{
         return $this->status;
     }
     
+    public function getAssigne(): ?User{
+        return $this->assigne;
+    }
+
+    public function getCategory(): ?Category{
+        return $this->category;
+    }
+
+    public function setCategorie(?Category $category): void {
+        $this->category= $category;
+    }
+
+    public function assignTo(?User $assigne): void {
+        $this->assigne=$assigne;
+    }
     /*Crear un metodo isUrgent() que invoca a traves
     del atrributo priority al metodo isUrgent() de TicketPriority ek 
     cual retorne true si la prioridad es 'urgent', o false en el caso contrario
@@ -94,6 +135,7 @@ final class Ticket{
     public function isOpen():bool {
         return $this->status->isOpen();
     }
+    
     
 }
     
