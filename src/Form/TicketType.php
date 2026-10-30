@@ -44,13 +44,13 @@ final class TicketType extends AbstractType
             ->add('priority',EnumType::class,[ //EnumType Construye un selector basado en un enum PHP
                 'class' => TicketPriority::class, //Indicamos el enum que se va a usar para construir el selector
                 'label' => 'Prioridad',
-                'choice_label' => static fn (TicketPriority $priority): string => $priority->getLabel()
+                'choice_label' => 'label'
                 
             ])
             ->add('status',EnumType::class,[ //EnumType Construye un selector basado en un enum PHP
                 'class' => TicketStatus::class, //Indicamos el enum que se va a usar para construir el selector
                 'label' => 'Estado',
-                'choice_label' => static fn (TicketStatus $status): string => $status->getLabel()
+                'choice_label' => 'label'
                 
             ])
             ->add('category', EntityType::class,[//EntityType construye un selector basado en una clase PHP, una entidad Doctrine

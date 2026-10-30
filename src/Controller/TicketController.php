@@ -44,6 +44,7 @@ final class TicketController extends AbstractController
      * POST: Recibe el formulario cuando se envie con sus valores,
      * Estos se procesan y se persisten en la base de datos si son correctos
      * Los datos del formulario vienen en el objeto Request
+     * * Los errores de validación vuelven al formulario asociados al campo que incumplió la restricción
      */
     #[Route('/tickets/new',name:'app_ticket_new', methods:['GET','POST'])]
     public function new(Request $request):Response{
@@ -61,42 +62,18 @@ final class TicketController extends AbstractController
          *  Extraer los datos correspondientes del request
          *  Transformar los valores al tipo esperado
          *  Assigna los datos al objeto TicketCreateData
-         * 
          */
         $form->handleRequest($request);
-
         /*Checkeo si el estado del formulario fue enviado y ademas si el form es valido
             isValid() puede ejecutar las reglas de validacion definidas en el DTO TicketCreateData
-
         */
-
         if($form->isSubmitted() &&$form->isValid()){
-            try{
-                //Construimos la entidad ticket con los datos ya validados en el DTO
-                $ticket = new Ticket(
-                    code: $data->code,
-                    title: $data->title,
-                    priority: $data->priority,
-                    status: $data->status
-                );
-                //Las relaciones som opcionales i se asignan mediante la API de Ticket
-                $ticket->setCategorie($data->category);
-                $ticket->assignTo($data->assigne);
-            } catch(InvalidArgumentException $exception){
-                /**
-                 * Si hay un error lo agregamos al formulario, y volvemos a
-                 * cargar la plantilla del formulario
-                 */
-                new FormError($exception->getMessage());
-                return $this->render('ticket/new.html.twig',[
-                    'form' => $form
-                ]);
-            }
+            //Construimos la entidad ticket con los datos ya validados en el DTO
+            $ticket = $data->mapToTicket();
             //Solo llegamos aqui si el ticket se construyo correctamente
             //Usamos el entityManager para persistir el ticket en la base de datos
             $this->entityManager->persist($ticket);
             $this->entityManager->flush();
-
             //Luego de guardar el ticket, redirigimos a la pagina de detalle de ticket
             return $this->redirectToRoute('app_ticket_show',[
                 'code'=> $ticket->getCode()
@@ -107,7 +84,6 @@ final class TicketController extends AbstractController
             'form' => $form,
         ]);
     }
-
 
     //Ruta dinamica para mostrar un ticket especifico por su ID.
     #[Route('/tickets/{code}', name:"app_ticket_show", methods: ['GET'])]

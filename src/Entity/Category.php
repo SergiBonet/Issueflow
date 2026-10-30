@@ -61,7 +61,7 @@ final class Category
             return;
         }
         $this->tickets->add($ticket);
-        $ticket->setCategorie($this);
+        $ticket->setCategory($this);
 
     }
 
@@ -70,7 +70,7 @@ final class Category
             return;
         }
         if ($ticket->getCategory()===$this){
-            $ticket->setCategorie(null);
+            $ticket->setCategory(null);
         }
     }
 }
