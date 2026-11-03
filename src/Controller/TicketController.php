@@ -32,10 +32,17 @@ final class TicketController extends AbstractController
 
     #[Route('/tickets', name: 'app_ticket_index', methods: ['GET'])]
     // El metodo que devuelve la lista de tickets por convencion REST es index()
-    public function index(): Response{
+    public function index(Request $request): Response{
+        $lastTicketCode = null;
+        
+         //Si existe una sesion recuperamos el valor de last ticked code
+         if($request->hasPreviousSession()){
+            $lastTicketCode = $request->getSession()->get('last_ticket_code');
+         }
          return $this->render('ticket/index.html.twig',[
             'title' => 'Incidencias',
-            'tickets' => $this ->ticketCatalog->all()
+            'tickets' => $this ->ticketCatalog->all(),
+            'lastTicketCode' => $lastTicketCode
          ]);
     }
 
@@ -74,6 +81,16 @@ final class TicketController extends AbstractController
             //Usamos el entityManager para persistir el ticket en la base de datos
             $this->entityManager->persist($ticket);
             $this->entityManager->flush();
+
+            /**
+            * Un Flash Message vive en la sesión y está pensado para consumirse una sola vez.
+            * Lo podemos usar para confirmar una creación de una incidencia después del redirect
+            */
+            $this->addFlash(
+            'success',
+            sprintf('Incidencia %s creada correctamente', $ticket->getCode())
+            );
+
             //Luego de guardar el ticket, redirigimos a la pagina de detalle de ticket
             return $this->redirectToRoute('app_ticket_show',[
                 'code'=> $ticket->getCode()
@@ -89,7 +106,7 @@ final class TicketController extends AbstractController
     #[Route('/tickets/{code}', name:"app_ticket_show", methods: ['GET'])]
     //El metodo que devuelve un ticket en particular por convencion REST es show()
     //El parametro $id identifica la ruta de ticket particular
-    public function show(string $code):Response{
+    public function show(string $code, Request $request):Response{
         
         $ticket = $this -> ticketCatalog->findByCode($code);
 
@@ -107,6 +124,12 @@ final class TicketController extends AbstractController
         }
         /* So llego a esta linea es porque no se lanzo el error,
         por lo tanto el $ticket no es null*/
+        
+        /**
+         * Guardamos en la sesion la informacion del ultimo ticket visitado.
+         * Esto luego lo podemos mostrar en otra pagina, por ejemplo en el listado de los tickets
+         */
+        $request->getSession()->set('last_ticket_code', $ticket->getCode());
 
         /*Envio a la plantilla correspondiente los datos del ticket 
         encontrado que es: $ticket */

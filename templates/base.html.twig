@@ -47,8 +47,14 @@
                 </nav>
             </div>
         </header>
-
         <main class="site-main">
+            {% if app.request.hasPreviousSession %}
+                {% for message in app.flashes('success') %}
+                    <div class="flash-success">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
             <div class="container">
                 {# Aqui las vistas hijas colocan el contenido principal #}
                 {% block body %}{% endblock %}
