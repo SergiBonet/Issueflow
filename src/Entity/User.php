@@ -8,6 +8,9 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\DBAL\Types\Types;
+use Override;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * Usuario minimo para asignar incidencias(tecnico)
@@ -15,12 +18,16 @@ use Doctrine\DBAL\Types\Types;
  */
 #[ORM\Entity]
 #[ORM\Table(name: 'users')]
-final class User
+final class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
+
     #[ORM\Column(type: Types::BIGINT, options: ['unsigned' => true])]
     private ?int $id = null;
+
+    #[ORM\Column(length:255, nullable:true)]
+    private ?string $password = null;
 
     public function __construct(
         #[ORM\Column(length: 120)]
@@ -58,6 +65,32 @@ final class User
     public function getEmail(): string{
         return $this->email;
     }
+    public function getCreatedAt(): DateTimeImmutable{
+        return $this->createdAt;
+    }
+
+    //Implementaciones de los metodos de las interfaces
+  
+    //Metodo que devuelve el identificador publico
+    public function getUserIdentifier(): string
+    {
+        return $this->email;
+    }
+
+    //Necesito un metodo que devuelva el listado de roles en un usuario
+    public function getRoles(): array
+    {
+        return ['ROLE_USER'];
+    }
 
     
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+    
+    public function setPassword(string $hashedPassword): void
+    {
+        $this->password = $hashedPassword;
+    } 
 }
