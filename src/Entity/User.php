@@ -29,6 +29,9 @@ final class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length:255, nullable:true)]
     private ?string $password = null;
 
+    #[ORM\Column(type: Types::JSON,nullable:true)]
+    private ?array $roles = [];
+
     public function __construct(
         #[ORM\Column(length: 120)]
         private string $name,
@@ -80,7 +83,10 @@ final class User implements UserInterface, PasswordAuthenticatedUserInterface
     //Necesito un metodo que devuelva el listado de roles en un usuario
     public function getRoles(): array
     {
-        return ['ROLE_USER'];
+       $roles = $this->roles ?? [];
+       //Garantizamos que siempre hay un rol
+       $roles[] = 'ROLE_USER';
+       return array_values(array_unique($roles));
     }
 
     
@@ -93,4 +99,9 @@ final class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->password = $hashedPassword;
     } 
+
+    public function setRoles(array $roles): void
+    {
+        $this->roles = array_values(array_unique($roles));
+    }
 }

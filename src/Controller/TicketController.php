@@ -9,7 +9,7 @@ use App\Contract\TicketSlaCalculatorInterface;
 use App\Entity\Ticket;
 use App\Form\Model\TicketCreateData;
 use App\Form\TicketType;
-use InvalidArgumentException;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
@@ -54,6 +54,11 @@ final class TicketController extends AbstractController
      * * Los errores de validación vuelven al formulario asociados al campo que incumplió la restricción
      */
     #[Route('/tickets/new',name:'app_ticket_new', methods:['GET','POST'])]
+    //IsGranted solo permite el acceso a la ruta al rol establecido
+    #[IsGranted(
+        'ROLE_AGENT',
+        message: 'Necesitas permisos de agente para crear incidencias.'
+    )]
     public function new(Request $request):Response{
         //Voy a crear un objeta TicketCreateData para recibir la info del formulario
         $data = new TicketCreateData();

@@ -12,7 +12,10 @@
     <div class="page-header">
         <p class="eyebrow">IssueFlow</p>
         <h1>{{ title }}</h1>
-        <a href="{{ path('app_ticket_new') }}">Nueva incidencia</a>
+        {# Solo mostramos el acceso a crecion a quien pueda usarlo #}
+        {% if is_granted('ROLE_AGENT')%}
+            <a href="{{ path('app_ticket_new') }} ">Nueva incidencia</a>
+        {% endif %}
         {#El array tickets sera suministrado por el controlador 
     EL filtro |length obtiene el numero de elementos del array tickets#}
         <p class="counter">{{ tickets|length }} incidencias</p>
