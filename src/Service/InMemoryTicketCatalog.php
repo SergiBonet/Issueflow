@@ -11,7 +11,7 @@ use App\Model\TicketStatus;
 use Override;
 
 
-final class InMemoryTicketCatalog implements TicketCatalogInterface
+final class InMemoryTicketCatalog //implements TicketCatalogInterface
 {
     private array $tickets;
 
@@ -46,9 +46,12 @@ final class InMemoryTicketCatalog implements TicketCatalogInterface
     {
         return $this->tickets;
     }
-
+    
+    public function search( $criteria): array
+    {
+        return $this->tickets;
+    }
     //find() retorna un ticket dado su $id o null si no existe
-    #[Override]
     public function findByCode(string $code): ?Ticket{
         return array_find(
             $this->tickets,
