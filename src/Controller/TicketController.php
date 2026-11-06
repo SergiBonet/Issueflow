@@ -58,14 +58,14 @@ final class TicketController extends AbstractController
         $ticketPage = $this-> ticketCatalog->search(
             criteria: $criteria,
             page: $page,
-            pageSize: 5
+            pageSize: 3
         );
 
 
         return $this->render('ticket/index.html.twig',[
             //Las claves del array se convierten en las variables que espera TWIG
             'title' => 'Incidencias',
-            'tickets' => $ticketPage,
+            'ticketPage' => $ticketPage,
             'lastTicketCode' => $lastTicketCode,
             'filterForm' => $filterForm
          ]);
