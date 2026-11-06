@@ -43,7 +43,7 @@ final class TicketRepository extends ServiceEntityRepository implements TicketCa
      * Construye una consulta con los filtros y devuelve una pagina de resultados
      *
      */
-    public function search(TicketSearchCriteria $criteria,int $page, int $pagSize): WindowPage
+    public function search(TicketSearchCriteria $criteria,int $page, int $pageSize): WindowPage
     {
         /**
          * Construimos una query que pide todos los tickets, agrega
@@ -99,7 +99,7 @@ final class TicketRepository extends ServiceEntityRepository implements TicketCa
         //Del listado de resultados posibles solo trae los correspondientes a la pagina definida por $page, que serian $pagSize resultados
         return (new OffsetPaginator(fetchJoinCollection: false))->paginate(
             $queryBuilder,
-            Window::fromPageNumberAndSize($page,$pagSize)
+            Window::fromPageNumberAndSize($page,$pageSize)
         );
     }
 }
