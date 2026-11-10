@@ -1,0 +1,9 @@
+{# Extiende la plantilla base #}
+{% extends "base.html.twig" %}
+
+{% block body %}
+    <h1>Ha ocurrido un problema!</h1>
+    <h2>Error: {{ status_code }}</h2>
+    <p>{{ status_text }}</p>
+    <a href="{{ path('app_ticket_index') }}">Volver a incidencias</a>
+{% endblock %}

@@ -1,8 +1,15 @@
 {# Vista de detalle de una incidencia concreta. #}
 {% extends 'base.html.twig' %}
 {# Usamos el ID del ticket para construir un título de página específico. #}
-{% block title %}{{ ticket.id }} · IssueFlow{% endblock %}
+{% block title %}{{ ticket.code }} · IssueFlow{% endblock %}
 {% block body %}
+    {% if app.request.hasPreviousSession %}
+        {% for message in app.flashes('success') %}
+            <div class="flash-success">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
     <p>
         {# No escribimos /tickets manualmente: usamos el nombre de la ruta. #}
         <a href="{{ path('app_ticket_index') }}">← Volver a incidencias</a>
@@ -12,8 +19,34 @@
             Twig accede a las claves del array con la notación ticket.id,
             ticket.title y ticket.priority.
         #}
-        <p class="ticket-id">{{ ticket.id }}</p>
+        <p class="ticket-code">{{ ticket.code }}</p>
         <h1>{{ ticket.title }}</h1>
-        <p>Prioridad: <strong>{{ ticket.priority }}</strong></p>
+        <p>Prioridad: <strong>{{ ticket.priority.label }}</strong></p>
+        <p>Status: <strong>{{ ticket.status.label }}</strong></p>
+        <p>Objetivo de respuesta: <strong>{{ responseTargetHours }}</strong></p>
+        <p>
+            Categoria:
+            {% if ticket.category %}
+                {{ ticket.category.name }} 
+            {% else %}
+                Sin Categoria
+            {% endif %}
+        </p>
+        <p>
+            Asignado a:
+            {% if ticket.assigne %}
+                {{ ticket.assigne.name }}
+            {% else %}
+                Sin Asignar
+            {% endif %}
+        </p>
+        {# Quiero mostrar un mensaje si la priority del ticket es 'urgent' 
+        ticket.urgent resuelve el metodo isUrgent()#}
+        {% if ticket.urgent %}
+            <p><strong>Requiere atencion inmediata!!</strong></p>
+        {% endif %}
+        {% if not ticket.open %}
+            <p><strong>El estado no es Open</strong></p>
+        {% endif %}
     </article>
 {% endblock %}

@@ -1,0 +1,9 @@
+{# Extiende la plantilla base #}
+{% extends "base.html.twig" %}
+
+{% block body %}
+    <h1>Acceso Denegado</h1>
+    <p>El usuario no tiene acceso a este recurso.</p>
+    <a href="{{ path('app_ticket_index') }}">Volver a incidencias</a>
+{% endblock %}
+

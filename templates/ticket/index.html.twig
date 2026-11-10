@@ -5,25 +5,92 @@
     Sobreescribimos el titulo de la pagina, usamos la variable title,
     la cualvendra desde el controlador  
 #}
-{% block title %}{{title}}{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 
 {# Inserto el cuerpo de la pagina de tickets#}
 {% block body %}
     <div class="page-header">
         <p class="eyebrow">IssueFlow</p>
         <h1>{{ title }}</h1>
+        {# Solo mostramos el acceso a crecion a quien pueda usarlo #}
+        {% if is_granted('ROLE_AGENT')%}
+            <a href="{{ path('app_ticket_new') }} ">Nueva incidencia</a>
+        {% endif %}
+        {#ticketPage sera suministrado por el controlador 
+        getTotalCount me calcula la cantidad de tickets#}
+        <p class="counter">{{ ticketPage.getTotalCount }} incidencias</p>
     </div>  
-    {#El array tickets sera suministrado por el controlador 
-    EL filtro |length obtiene el numero de elementos del array tickets#}
-    <p class="counter">{{tickets|length}} incidencias</p>
+
+    {# Filtro para busqueda de incidencias #}
+    <section class="filter-card">
+        {{ form_start(filterForm,{attr:{class: 'filter-form'} }) }}
+            {# Campos del formulario #}
+            {{ form_row(filterForm.query) }}
+            {{ form_row(filterForm.priority) }}
+            {{ form_row(filterForm.status) }}
+            {{ form_row(filterForm.category) }}
+
+            <div class="filter-actions">
+                {{ form_widget(filterForm.filter) }}
+                <a class="button button-outline" href="{{ path('app_ticket_index')}}">Limpiar</a>
+            </div>
+        {{ form_end(filterForm) }}
+    </section>
+
+
+    {% if lastTicketCode %}
+        <p>
+            Ultima incidencia consulatada:
+            <a href="{{path('app_ticket_show', {code: lastTicketCode}) }}">
+                {{ lastTicketCode }}
+            </a>
+        </p>
+        
+    {% endif %}
     <div class="ticket-list">
-    {#Recorremos la coleccion que el controlador envio a la plantilla #}
-        {% for ticket in tickets %}
+        {#Recorremos la coleccion de tickets de la pagina dada por el paginador#}
+        {% for ticket in ticketPage.getItems() %}
             {# Aqui muestro la info para cada uno de los tickets #}
-            {% include'ticket/_ticket_card.html.twig' with {ticket: ticket} only %}
+            {% include 'ticket/_ticket_card.html.twig' with {ticket: ticket} only %}
         {% else %}
-             {# Twig ejecuta este bloque si la coleccion esta vacia #}
-             <p>No hay incidencia disponibles</p>
+            {# Twig ejecuta este bloque si la coleccion esta vacia #}
+            <p>No hay incidencia que coincida con los criterios de busqueda</p>
         {% endfor %}
     </div>
+    {# Agregamos los controlers de navegacion del paginador
+    hasToPaginate verifica si hacen falta los controles de pagina,
+    si los resultados caben en una sola pagina no harian falta #}
+    {% if ticketPage.hasToPaginate() %}
+        {# Guardo todos los parametros actuales de la URL #}    
+        {% set queryParameters = app.request.query.all %}
+
+        <nav class="pagination">
+            {% if ticketPage.hasPreviousPage() %}
+                <a 
+                    class="button button-outline"
+                    href="{{path(
+                    'app_ticket_index',
+                    queryParameters|merge({ page: ticketPage.getPageNumber() -1})
+                    ) }}"
+                >
+                    ← Anterior
+                </a>
+            {% endif %}
+            <span>
+                Pagina{{ ticketPage.getPageNumber() }} de {{ ticketPage.getPageCount() }}
+            </span>
+            {# Mostramos enlaze a la pagina siguiente solo si existe una pagina siguiente #}
+            {% if ticketPage.hasNextPage() %}
+                <a 
+                    class="button button-outline"
+                    href="{{path(
+                    'app_ticket_index',
+                    queryParameters|merge({ page: ticketPage.getPageNumber() +1})
+                    ) }}"
+                >
+                    Siguiente →
+                </a>
+            {% endif %}
+        </nav>
+    {% endif %}
 {% endblock %}
