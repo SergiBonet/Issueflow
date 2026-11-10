@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Contract\TicketSlaCalculatorInterface;
 use App\Entity\Category;
 use App\Entity\Ticket;
 use App\Form\Model\TicketSearchCriteria;
@@ -21,7 +22,8 @@ final class ApiTicketController extends AbstractController
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly TicketRepository $ticketRepository
+        private readonly TicketRepository $ticketRepository,
+        private readonly TicketSlaCalculatorInterface $ticketSlaCalculator
     ){}
 
     #[Route('/api/tickets', name: 'app_api_ticket_index', methods: ['GET' ])]
@@ -116,7 +118,7 @@ final class ApiTicketController extends AbstractController
         $ticketPage = $this->ticketRepository->search(
             criteria: $criteria,
             page: $page,
-            pageSize: 10
+            pageSize: 5
         );
 
         //$ticketPage es un arreglo de entidades Ticket
@@ -130,6 +132,50 @@ final class ApiTicketController extends AbstractController
         return $this->json([
             'tickets'=> $items        
         ]);
+    }
+
+    /**
+     * API: Devuelve un ticket concreto por su codigo de negocio
+     */
+    #[Route('/api/tickets/{code}', name: 'app_api_ticket_show', methods: ['GET'])]
+    public function show(string $code): JsonResponse
+    {
+        if (preg_match('/^INC-\d{4}$/', $code)!==1) {
+            return $this->json(
+                [
+                    'error' => [
+                    'code' => 'invalid_ticket_code',
+                    'message' => 'El codigo debe tener el formato INC-0000'
+                    ],
+                    
+                ],
+                Response:: HTTP_BAD_REQUEST
+            );
+        }
+
+        //Busco el ticket solicitado
+        $ticket = $this->ticketRepository->findByCode($code);
+
+        // Si no existe respondo con el error correspondiente: 404
+        if ($ticket === null) {
+            return $this->json(
+            [
+                'error' =>[
+                    'code' => 'ticket_not __ found',
+                    'message' => 'El codigo debe tener el Iformato INC-0000'
+                ],
+            ],
+            Response:: HTTP_NOT_FOUND,
+            );
+        }
+
+        return $this->json([
+            'data'=>$this->ticketToArray($ticket),
+            'meta'=>[
+                'response_target_hours'=> $this->ticketSlaCalculator->getResponseTargetHours($ticket)
+            ]
+        ]);
+
     }
 
     private function ticketToArray(Ticket $ticket):array
