@@ -1,7 +1,10 @@
-#Imagen oficial de PHP 8.4 con Apache incluido
+# Imagen oficial de PHP 8.4 con Apache incluido
 FROM php:8.4-apache
 
-#Instalo los paquetes necesarios para mi app
+ENV APP_ENV=prod \
+    APP_DEBUG=0
+
+# Instalo los paquetes necesarios para mi app
 RUN apt-get update \
     && apt-get install -y \
         git \
@@ -14,16 +17,16 @@ RUN apt-get update \
         zip \
     && rm -rf /var/lib/apt/lists/*
 
-#Activa el modula mod_rewrite de Apache
-RUN a2enmod rewrite 
+# Actuva el módulo mod_rewrite de Apache
+RUN a2enmod rewrite
 
-#Copio composer desde la imagen oficial
+# Copio composer desde la imagen oficial
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-#Directorio de trabajo dentro del contenedor
+# Directorio de trabajo dentro del contenedor
 WORKDIR /var/www/html
 
-#Copio el contenido del contexto de construccion hacia el directorio de trabajo
+# Copio el contenido del contexto de construcción hacia el directorio de trabajo
 COPY . .
 
 RUN composer install \
