@@ -10,7 +10,11 @@ services:
       - "8000:80" # 8000 es el puerto del ordenador host, y 80 el interno del contenedor
 
     environment:
-      - .env
+      APP_ENV: ${APP_ENV}
+      APP_DEBUG: ${APP_DEBUG}
+      APP_SECRET: ${APP_SECRET}
+      DATABASE_URL: ${DATABASE_URL}
+
 
     command: 
       - sh
@@ -31,10 +35,10 @@ services:
     container_name: issueflow_db
 
     environment:
-      MYSQL_DATABASE: issueflow
-      MYSQL_USER: issueflow
-      MYSQL_PASSWORD: issueflow_pass
-      MYSQL_ROOT_PASSWORD: root_pass
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     
     ports: 
       - "3307:3306"
